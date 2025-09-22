@@ -7,7 +7,7 @@ import SearchBox from "./SearchBox";
 import axios from "axios";
 import { set } from "date-fns";
 import { useAtom } from "jotai";
-import { PlaceAtom } from "@/app/atom";
+import { LoadingCityAtom, PlaceAtom } from "@/app/atom";
 
 type Props = { location?: string };
 
@@ -17,6 +17,8 @@ export default function Navbar({ location }: Props) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [place, setPlace] = useAtom(PlaceAtom);
+  const [loadingCity, setLoadingCity] = useAtom(LoadingCityAtom);
+
   async function handleInputChange(value: string) {
     setCity(value);
     if (value.length >= 3) {
@@ -24,8 +26,9 @@ export default function Navbar({ location }: Props) {
         const response = await axios.get(
           `https://api.openweathermap.org/data/2.5/find?q=${value}&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
         );
-        const suggestions = response.data.list.map((item: any) => item.name);
-        setSuggestions(suggestions);
+        const suggestionss = response.data.list.map((item: any) => item.name);
+
+        setSuggestions(suggestionss);
         setError("");
         setShowSuggestions(true);
       } catch (error) {
@@ -44,13 +47,18 @@ export default function Navbar({ location }: Props) {
   }
 
   function handleSubmitSearch(e: React.FormEvent<HTMLFormElement>) {
+    setLoadingCity(true);
     e.preventDefault();
     if (suggestions.length == 0) {
       setError("Location not found ");
+      setLoadingCity(false);
     } else {
       setError("");
-      setPlace(city);
-      setShowSuggestions(false);
+      setTimeout(() => {
+        setLoadingCity(false);
+        setPlace(city);
+        setShowSuggestions(false);
+      }, 500);
     }
   }
   return (
@@ -61,7 +69,6 @@ export default function Navbar({ location }: Props) {
           <MdWbSunny className="text-3xl mt-1 text-yellow-300" />
         </div>
         <section className="flex gap-2 items-center">
-          <MdMyLocation className="text-2xl text-gray-400 hover:opacity-80 cursor-pointer" />
           <MdOutlineLocationOn className="text-3xl" />
           <p className="text-slate-900/80 text-sm">{location}</p>
           <div className="relative">
