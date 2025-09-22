@@ -17,8 +17,8 @@ export default function Navbar({ location }: Props) {
   const [error, setError] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [, setPlace] = useAtom(PlaceAtom); // remove unused 'place'
-  const [, setLoadingCity] = useAtom(LoadingCityAtom); // remove unused 'loadingCity'
+  const [, setPlace] = useAtom(PlaceAtom);
+  const [, setLoadingCity] = useAtom(LoadingCityAtom);
 
   async function handleInputChange(value: string) {
     setCity(value);
@@ -28,10 +28,9 @@ export default function Navbar({ location }: Props) {
           `https://api.openweathermap.org/data/2.5/find?q=${value}&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
         );
 
-        // ✅ Strongly type API response
-        const suggestionsList = (response.data.list as OpenWeatherItem[]).map(
-          (item) => item.name
-        );
+        const suggestionsList = (
+          (response.data?.list as OpenWeatherItem[]) ?? []
+        ).map((item) => item.name);
 
         setSuggestions(suggestionsList);
         setError("");
@@ -39,6 +38,7 @@ export default function Navbar({ location }: Props) {
       } catch {
         setSuggestions([]);
         setShowSuggestions(false);
+        setError("Failed to fetch suggestions");
       }
     } else {
       setSuggestions([]);
@@ -107,25 +107,22 @@ function SuggestionsBox({
   handleSuggestionClick: (item: string) => void;
   error: string;
 }) {
+  if (!showSuggestions && !error) return null;
+
   return (
-    <>
-      {(showSuggestions && suggestions.length > 1) ||
-        (error && (
-          <ul className="mb-4 bg-white absolute border top-[44px] left-0 border-gray-300 rounded-md min-w-[200px] flex flex-col gap-1 py-2 px-2">
-            {error && suggestions.length < 1 && (
-              <li className="text-red-500 p-1">{error}</li>
-            )}
-            {suggestions.map((item, i) => (
-              <li
-                key={i}
-                onClick={() => handleSuggestionClick(item)}
-                className="cursor-pointer p-1 rounded hover:bg-gray-200"
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-        ))}
-    </>
+    <ul className="mb-4 bg-white absolute border top-[44px] left-0 border-gray-300 rounded-md min-w-[200px] flex flex-col gap-1 py-2 px-2">
+      {error && suggestions.length < 1 && (
+        <li className="text-red-500 p-1">{error}</li>
+      )}
+      {suggestions.map((item, i) => (
+        <li
+          key={i}
+          onClick={() => handleSuggestionClick(item)}
+          className="cursor-pointer p-1 rounded hover:bg-gray-200"
+        >
+          {item}
+        </li>
+      ))}
+    </ul>
   );
 }
