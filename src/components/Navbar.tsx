@@ -68,31 +68,48 @@ export default function Navbar({ location }: Props) {
   }
 
   return (
-    <nav className="shadow-sm top-0 left-0 sticky z-50 bg-white">
-      <div className="h-[80px] w-full flex justify-between items-center max-w-7xl px-3 mx-auto">
-        <div className="flex items-center gap-2">
-          <h2 className="text-gray-500 text-3xl">weather</h2>
-          <MdWbSunny className="text-3xl mt-1 text-yellow-300" />
-        </div>
-        <section className="flex gap-2 items-center">
-          <MdOutlineLocationOn className="text-3xl" />
-          <p className="text-slate-900/80 text-sm">{location}</p>
-          <div className="relative">
-            <SearchBox
-              onSubmit={handleSubmitSearch}
-              value={city}
-              onChange={(e) => handleInputChange(e.target.value)}
-            />
-            <SuggestionsBox
-              showSuggestions={showSuggestions}
-              suggestions={suggestions}
-              handleSuggestionClick={handleSuggestionClick}
-              error={error}
-            />
+    <>
+      <nav className="shadow-sm top-0 left-0 sticky z-50 bg-white">
+        <div className="h-[80px] w-full flex justify-between items-center max-w-7xl px-3 mx-auto">
+          <div className="flex items-center gap-2">
+            <h2 className="text-gray-500 text-3xl">weather</h2>
+            <MdWbSunny className="text-3xl mt-1 text-yellow-300" />
           </div>
-        </section>
-      </div>
-    </nav>
+          <section className="flex  gap-2 items-center">
+            <MdOutlineLocationOn className="text-3xl" />
+            <p className="text-slate-900/80 text-sm">{location}</p>
+            <div className="relative hidden md:block">
+              <SearchBox
+                onSubmit={handleSubmitSearch}
+                value={city}
+                onChange={(e) => handleInputChange(e.target.value)}
+              />
+              <SuggestionsBox
+                showSuggestions={showSuggestions}
+                suggestions={suggestions}
+                handleSuggestionClick={handleSuggestionClick}
+                error={error}
+              />
+            </div>
+          </section>
+        </div>
+      </nav>
+      <section className="max-w-7xl px-3 md:hidden">
+        <div className="relative">
+          <SearchBox
+            onSubmit={handleSubmitSearch}
+            value={city}
+            onChange={(e) => handleInputChange(e.target.value)}
+          />
+          <SuggestionsBox
+            showSuggestions={showSuggestions}
+            suggestions={suggestions}
+            handleSuggestionClick={handleSuggestionClick}
+            error={error}
+          />
+        </div>
+      </section>
+    </>
   );
 }
 
