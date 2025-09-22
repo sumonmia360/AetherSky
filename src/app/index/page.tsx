@@ -1,7 +1,9 @@
 "use client";
+import Container from "@/components/Container";
 import Navbar from "@/components/Navbar";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { format, formatDistance, formatRelative, subDays } from "date-fns";
 
 export interface WeatherApiResponse {
   cod: string;
@@ -87,7 +89,8 @@ export default function Index() {
       return data;
     },
   });
-  console.log("Data", data?.city.name);
+  console.log("Data", data?.list[0]);
+  const firstData = data?.list[0];
 
   if (isPending)
     return (
@@ -98,6 +101,24 @@ export default function Index() {
   return (
     <div className="flex flex-col gap-4 bg-gray-100 min-h-screen">
       <Navbar></Navbar>
+      <main className="px-3 max-w-7xl flex flex-col gap-9 mx-auto w-full pb-10 pt-4">
+        {/* today Data */}
+        <section>
+          <div>
+            <h2 className="flex gap-1 text-2xl items-end">
+              <p>{format(firstData?.dt_txt ?? "", "eeee")}</p>
+              <p className="text-lg">
+                ({format(firstData?.dt_txt ?? "", "MM/dd/yyyy")})
+              </p>
+            </h2>
+            <Container className="gap-10 px-6 items-center">
+              <div className="flex flex-col px-4"></div>
+            </Container>
+          </div>
+        </section>
+        {/* 7 days forcast data */}
+        <section></section>
+      </main>
     </div>
   );
 }
