@@ -1,6 +1,7 @@
 "use client";
 import Container from "@/components/Container";
 import Navbar from "@/components/Navbar";
+import WeatherIcon from "@/components/WeatherIcon";
 import convertKelvinToCelsius from "@/utils/convertKelvinToCelsius";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -144,6 +145,8 @@ export default function Index() {
                     <p className="whitespace-nowrap ">
                       {format(d.dt_txt, "h:mm a")}
                     </p>
+                    <WeatherIcon iconname={d.weather[0].icon}></WeatherIcon>
+                    <p>{convertKelvinToCelsius(d?.main.temp ?? 0)}</p>
                   </div>
                 ))}
               </div>
