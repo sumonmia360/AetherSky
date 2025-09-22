@@ -15,6 +15,9 @@ import {
   fromUnixTime,
   subDays,
 } from "date-fns";
+import { useAtom } from "jotai";
+import { PlaceAtom } from "../atom";
+import { useEffect } from "react";
 
 export interface WeatherApiResponse {
   cod: string;
@@ -91,15 +94,19 @@ export interface Coordinates {
 }
 
 export default function Index() {
-  const { isPending, error, data } = useQuery<WeatherApiResponse>({
+  const [place, setPlace] = useAtom(PlaceAtom);
+  const { isPending, error, data, refetch } = useQuery<WeatherApiResponse>({
     queryKey: ["repoData"],
     queryFn: async () => {
       const { data } = await axios.get(
-        `http://api.openweathermap.org/data/2.5/forecast?q=dhaka&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}&cnt=56`
+        `http://api.openweathermap.org/data/2.5/forecast?q=${place}&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}&cnt=56`
       );
       return data;
     },
   });
+  useEffect(() => {
+    refetch();
+  }, [place, refetch]);
   // console.log("Data", data?.city);
   const firstData = data?.list[0];
 
@@ -111,7 +118,7 @@ export default function Index() {
     );
   return (
     <div className="flex flex-col gap-4 bg-gray-100 min-h-screen">
-      <Navbar></Navbar>
+      <Navbar location={data?.city.name}></Navbar>
       <main className="px-3 max-w-7xl flex flex-col gap-9 mx-auto w-full pb-10 pt-4">
         {/* today Data */}
         <section className="">
@@ -192,9 +199,6 @@ export default function Index() {
           </div>
         </section>
         {/* 7 days forcast data */}
-        <section className="flex flex-col gap-4 ">
-          <p className="text-2xl">7 days forcast data</p>
-        </section>
       </main>
     </div>
   );
