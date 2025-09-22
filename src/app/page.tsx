@@ -1,9 +1,11 @@
-import Image from "next/image";
+// import Image from "next/image";
+
+import Index from "./index/page";
 
 export default function Home() {
   return (
     <div>
-      <h1>weather app AetherSky</h1>
+      <Index></Index>
     </div>
   );
 }
